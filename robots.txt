@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+# Demo indexing is disabled by noindex tags in index.html.
