@@ -1,0 +1,70 @@
+name: Publish ZAMELANO demo
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - 'scripts/**'
+      - '.github/workflows/deploy-demo.yml'
+      - '.gitignore'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: zamelano-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Verify project
+        run: |
+          python3 scripts/check_project.py
+          node --check site/app.js
+
+      - name: Prepare non-indexable demo
+        run: python3 scripts/prepare_site.py --target demo --output build/demo
+
+      - name: Update gh-pages with changed files
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code --heads origin gh-pages > /dev/null; then
+            git fetch origin gh-pages
+            git worktree add --detach build/gh-pages FETCH_HEAD
+          else
+            git worktree add --detach --no-checkout build/gh-pages HEAD
+            git -C build/gh-pages checkout --orphan gh-pages
+            git -C build/gh-pages rm -rf --ignore-unmatch .
+          fi
+          python3 scripts/prepare_site.py --target demo --output build/gh-pages
+          git -C build/gh-pages config user.name github-actions[bot]
+          git -C build/gh-pages config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git -C build/gh-pages add -A
+          if ! git -C build/gh-pages diff --cached --quiet; then
+            git -C build/gh-pages commit -m "Publish demo from ${GITHUB_SHA}"
+            git -C build/gh-pages push origin HEAD:refs/heads/gh-pages
+          fi
+
+      - name: Upload static Pages artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: build/demo
+
+      - name: Deploy GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

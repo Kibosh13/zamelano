@@ -1,0 +1,8 @@
+{
+  "mode": "concept",
+  "products": [
+    {"id":"concept-01","name":{"ru":"Комплект №01","en":"Lingerie set No. 01"},"image":"assets/ivory.webp","palette":"ivory","category":"set","collection":"concept","sizes":[],"colors":[],"price":null,"stock":null,"description":{"ru":"Название модели, состав и описание производителя — [заполнить]. Изображение создано ИИ для визуальной концепции.","en":"Model name, composition and manufacturer description — [fill in]. AI-generated image for the visual concept."}},
+    {"id":"concept-02","name":{"ru":"Комплект №02","en":"Lingerie set No. 02"},"image":"assets/black.webp","palette":"black","category":"set","collection":"concept","sizes":[],"colors":[],"price":null,"stock":null,"description":{"ru":"Название модели, состав и описание производителя — [заполнить]. Изображение создано ИИ для визуальной концепции.","en":"Model name, composition and manufacturer description — [fill in]. AI-generated image for the visual concept."}},
+    {"id":"concept-03","name":{"ru":"Комплект №03","en":"Lingerie set No. 03"},"image":"assets/peach.webp","palette":"peach","category":"set","collection":"concept","sizes":[],"colors":[],"price":null,"stock":null,"description":{"ru":"Название модели, состав и описание производителя — [заполнить]. Изображение создано ИИ для визуальной концепции.","en":"Model name, composition and manufacturer description — [fill in]. AI-generated image for the visual concept."}}
+  ]
+}

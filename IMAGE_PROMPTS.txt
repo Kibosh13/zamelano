@@ -1,0 +1,12 @@
+ImageGen — встроенный инструмент, 11 октября 2026.
+Изображения — визуальная концепция, не реальные товары бренда.
+
+hero -> assets/ivory.webp
+Use case: product-mockup. Asset type: premium lingerie boutique website editorial hero, wide landscape 3:2. Create an exquisite photorealistic still life of an ivory delicate lace bralette and matching high waist briefs draped naturally over warm peach champagne silk fabric. Empty garments, no people, no body parts. Soft slanting morning sunlight and natural long shadows, elevated fashion magazine photography, subtle warm grain. The set occupies center right with generous beautiful satin folds at left. One dried flowering branch barely visible near edge. Palette ivory, muted peach, antique gold light. Fine lace embroidery visible, believable straps. No text, logo or watermark. This is an illustrative concept, not a real branded product.
+
+black -> assets/black.webp
+Use case: product-mockup. Asset type: portrait 4:5 catalogue concept photo. Luxurious black floral lace bralette with matching high waist briefs, empty garments, laid naturally on warm sand colored matte stone plinth and beige backdrop, soft directional afternoon light with refined shadows. Overhead three quarter editorial product photography, sharp fabric details, understated, tasteful, high end fashion boutique. No people, no body parts, no writing, logos or watermark. This is an illustrative concept, not a real branded product.
+
+peach -> assets/peach.webp
+Use case: product-mockup. Asset type: portrait 4:5 catalogue concept photo. Beautiful blush peach lace lingerie bralette and matching briefs, empty garments, resting on ivory satin in soft draped folds. Editorial luxury boutique photography, warm daylight, delicate floral lace detail, calm restrained styling, centered objects and lots of breathing space, refined natural texture. No people, body parts, writing, logo or watermark. This is an illustrative concept, not a real branded product.
+

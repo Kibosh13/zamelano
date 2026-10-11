@@ -1,0 +1,63 @@
+# Credentials and environment files
+.env
+.env.*
+*.env
+*.pem
+*.key
+credentials*.json
+secrets*.json
+
+# Local dependencies and caches
+node_modules/
+.pnpm-store/
+.npm/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.cache/
+.next/
+.nuxt/
+.turbo/
+
+# Build output, previews, deployment artifacts and local reports
+build/
+dist/
+out/
+coverage/
+outputs/
+work/
+tmp/
+temp/
+artifacts/
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+
+# Databases and runtime data
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.sql
+data/
+uploads/
+storage/
+
+# Logs, editor state and temporary files
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+.DS_Store
+.idea/
+.vscode/
+
+# Host-specific Sites/Codex metadata
+.openai/
+.codex/
+.agents/
+.sites-*/
