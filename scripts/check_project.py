@@ -5,6 +5,7 @@ import re
 import subprocess
 from html.parser import HTMLParser
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 BANNED_DIRS = {'.openai','.codex','.agents','node_modules','build','dist','out','outputs','work','tmp','temp','data','storage','uploads','__pycache__'}
@@ -29,6 +30,8 @@ class Page(HTMLParser):
             self.ids.append(data['id'])
         if 'src' in data:
             self.sources.append(data['src'])
+        if tag == 'link' and data.get('rel') in {'stylesheet', 'icon', 'preload'} and 'href' in data:
+            self.sources.append(data['href'])
         if tag == 'a' and data.get('href','').startswith('#') and data['href'] != '#':
             self.anchors.append(data['href'][1:])
 
@@ -52,7 +55,9 @@ def main():
     if len(page.ids) != len(set(page.ids)):
         errors.append('Duplicate HTML IDs')
     for source in page.sources:
-        if not (ROOT/'site'/source).is_file():
+        # Version queries refresh browser caches without changing the asset path.
+        asset_path = unquote(urlsplit(source).path)
+        if not (ROOT/'site'/asset_path).is_file():
             errors.append(f'Missing static asset: {source}')
     for anchor in page.anchors:
         if anchor not in page.ids:
