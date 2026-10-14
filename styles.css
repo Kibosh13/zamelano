@@ -9,8 +9,8 @@
 /* Brand artwork keeps its original shape; colour comes from the brand palette. */
 .header .wordmark{width:190px;height:84px;flex:0 0 auto;letter-spacing:normal}
 .header .wordmark .header-logo{display:block;width:100%;height:100%;margin:0;background:linear-gradient(90deg,#8e5d2c 0%,#c39a45 52%,#8e5d2c 100%);-webkit-mask:url("assets/zamelano-logo-mask.png") center/100% auto no-repeat;mask:url("assets/zamelano-logo-mask.png") center/100% auto no-repeat}
-.brand-key{display:inline-block;width:20px;height:28px;flex:0 0 auto;background:linear-gradient(#c39a45,#a17437);-webkit-mask:url("assets/zamelano-key-mask.png") center/contain no-repeat;mask:url("assets/zamelano-key-mask.png") center/contain no-repeat;transition:transform .2s}
-.text-button:hover .brand-key,.button:hover .brand-key{transform:rotate(8deg)}
+
+
 .hero-slider{width:100%;min-width:0}
 .hero-slide-window{overflow:hidden;touch-action:pan-y;cursor:grab}
 .hero-slide-window:active{cursor:grabbing}
@@ -20,7 +20,6 @@
 .hero-slider .hero-description{margin-bottom:0}
 .hero-slider-controls{display:flex;align-items:center;gap:6px;margin:12px 0 22px}
 .slide-nav{width:42px;height:42px;border:1px solid var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0;transition:background .2s,border-color .2s}
-.slide-nav svg{width:16px;height:16px}
 .slide-nav:hover{background:var(--peach-light);border-color:var(--gold)}
 .hero-slide-dots{display:flex;align-items:center}
 .slide-dot{width:28px;height:42px;padding:0;display:flex;align-items:center;justify-content:center}
@@ -28,6 +27,44 @@
 .slide-dot.is-active span{width:18px;border-radius:6px;background:var(--gold)}
 .hero-slide-count{font-size:9px;letter-spacing:1px;color:var(--muted);margin-left:8px;white-space:nowrap}
 @media(max-width:900px){.header .wordmark{width:170px;height:76px}}
-@media(max-width:600px){.header .wordmark{width:140px;height:64px}.hero-slider-controls{margin:10px 0 20px;gap:4px}.brand-key{width:18px;height:25px}}
+@media(max-width:600px){.header .wordmark{width:140px;height:64px}.hero-slider-controls{margin:10px 0 20px;gap:4px}}
 @media(max-width:360px){.header .wordmark{width:124px;height:56px}}
 @media(prefers-reduced-motion:reduce){.hero-slide-track,.slide-dot span,.brand-key{transition:none}}
+
+/* The complete key, including the L foot, is selected from the full logo.
+   Source canvas: 1691 x 930. Crop: x=680, y=110, w=390, h=710.
+   Below y=530 only the L column remains, excluding neighbouring letters. */
+.brand-key,[data-brand-key]::after,.brand-select-key::after{
+  --key-height:32px;
+  content:"";display:inline-block;flex:0 0 auto;vertical-align:middle;
+  width:calc(var(--key-height) * 390 / 710);height:var(--key-height);
+  background:linear-gradient(#c39a45,#a17437);
+  -webkit-mask-image:url("assets/zamelano-logo-mask.png");mask-image:url("assets/zamelano-logo-mask.png");
+  -webkit-mask-size:calc(var(--key-height) * 1691 / 710) calc(var(--key-height) * 930 / 710);
+  mask-size:calc(var(--key-height) * 1691 / 710) calc(var(--key-height) * 930 / 710);
+  -webkit-mask-position:calc(var(--key-height) * -680 / 710) calc(var(--key-height) * -110 / 710);
+  mask-position:calc(var(--key-height) * -680 / 710) calc(var(--key-height) * -110 / 710);
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;mask-mode:alpha;
+  clip-path:polygon(0 0,100% 0,100% 59.155%,71.795% 59.155%,71.795% 100%,41.026% 100%,41.026% 59.155%,0 59.155%);
+  pointer-events:none;
+}
+[data-brand-key]{display:inline-flex;align-items:center;gap:9px}
+.announcement a[data-brand-key]{display:inline-flex;align-items:center;gap:6px}
+.announcement a[data-brand-key]::after{--key-height:22px}
+.footer-main a[data-brand-key],.footer-main button[data-brand-key]{display:flex;align-items:center;gap:6px;width:fit-content}
+.footer-main [data-brand-key]::after{--key-height:22px}
+.slide-nav{width:auto;min-width:73px;height:42px;gap:7px;padding:0 9px;border-radius:24px}
+.slide-nav .brand-key{--key-height:26px}
+.slide-nav-label{font-size:9px;letter-spacing:.2px;white-space:nowrap}
+select{appearance:none;-webkit-appearance:none}
+.brand-select-key{display:block;position:relative;min-width:0;width:100%}
+.filter-panel label .brand-select-key,.form-grid label>.brand-select-key{display:block;margin-bottom:0;letter-spacing:normal}
+.brand-select-key::after{--key-height:25px;position:absolute;right:8px;top:50%;transform:translateY(-50%)}
+.brand-select-key>select,.filter-panel .brand-select-key>select,.sort-label .brand-select-key>select{width:100%;padding-right:32px}
+@media(max-width:900px){.announcement>a[data-brand-key]{display:none}}
+@media(max-width:600px){.brand-key,[data-brand-key]::after{--key-height:29px}.footer-main [data-brand-key]::after{--key-height:22px}.slide-nav .brand-key{--key-height:26px}.slide-dot{width:24px}.slide-nav{min-width:68px;padding:0 8px;gap:6px}}
+@media(max-width:360px){.hero-slide-count{display:none}}
+
+/* Native numeric steppers contain arrows; retain numeric input and keyboard control. */
+input[type="number"]{appearance:textfield;-moz-appearance:textfield}
+input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
