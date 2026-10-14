@@ -22,12 +22,81 @@ const dictionary = {
     home:'ZAMELANO — home',logoAlt:'ZAMELANO logo',skip:'Skip to content',announcement:'Online boutique · Courier delivery in Moscow and Moscow Region',write:'Get in touch ↗',navigation:'Main navigation',catalog:'Shop',brand:'Our story',journal:'Journal',delivery:'Delivery & payment',search:'Search',favorites:'Favourites',cart:'Shopping bag',menu:'Menu',close:'Close',heroEyebrow:'LINGERIE. A MOOD. YOU.',heroTitle:'Beauty<br>begins with<br>a <em>feeling.</em>',heroDescription:'Women’s lingerie. For yourself, your mood, and every new day.',explore:'Explore the collection',discoverBrand:'Discover ZAMELANO',heroFoot:'A personal story. A beautiful beginning.',heroAlt:'Concept illustration: ivory lace lingerie on peach satin',imageConcept:'Visual concept · AI-generated image',value1:'For yourself',value2:'For your mood',value3:'For a beautiful beginning',catalogEyebrow:'SOMETHING PERSONAL',catalogTitle:'Find your own feeling',filters:'Filters',catalogNote:'Catalogue concept: models, sizes, colours, prices and stock — [fill in]. Illustrations do not depict actual products.',categories:'Palette concepts',all:'All lingerie sets',ivoryConcept:'Ivory palette',blackConcept:'Dark palette',peachConcept:'Peach palette',sort:'Sort',sortDefault:'Original order',sortAsc:'Price: low to high',sortDesc:'Price: high to low',size:'Size',allSizes:'All sizes',fill:'[fill in]',color:'Colour',allColors:'All colours',ivory:'Ivory · concept',black:'Black · concept',peach:'Peach · concept',collection:'Collection',allCollections:'All collections',concept:'Concept · [fill in]',priceFrom:'Price from, RUB',priceTo:'Price to, RUB',reset:'Reset',filterNote:'Prices are not listed yet. Price filters only show products with a confirmed price.',searchPlaceholder:'Find a lingerie set…',showAll:'Show all',brandAlt:'Concept illustration: peach lace lingerie on ivory satin',brandImageCaption:'ZAMELANO · VISUAL CONCEPT',brandEyebrow:'CLOSER TO YOURSELF',brandTitle:'A little ritual.<br><em>Just for you.</em>',brandText1:'Lingerie is a personal part of your wardrobe. Chosen by how you feel, rather than someone else’s rules.',brandText2:'ZAMELANO is a women’s lingerie brand and online boutique. Quality is the brand’s guiding principle. This is your first look at the concept for its future collection.',askBrand:'Ask the brand a question',journalEyebrow:'BETWEEN THE LINES',journalTitle:'The ZAMELANO journal',journalNote:'Editorial topics for launch',guide:'GUIDE',details:'DETAILS',news:'NEWS',articleFit:'Finding your lingerie',articleCare:'The art of gentle care',articleNews:'A new chapter for ZAMELANO',serviceEyebrow:'THE PLEASURE OF SHOPPING',serviceTitle:'About your order',deliveryText:'Courier delivery in Moscow and Moscow Region. The charge is based on the actual delivery cost. Timing and terms — [fill in].',paymentText:'Online card payments and SBP are planned. Payments will become available once the payment provider and online cash register are connected.',sizeHelp:'Finding your size',sizeText:'Manufacturer’s size chart — [fill in]. For now, you can ask the brand for help on Telegram.',openSize:'How to choose your size ↗',gifts:'Gifts & little privileges',giftsText:'Gift certificates, promo codes, loyalty bonuses and seasonal offers are planned. Terms and values — [fill in].',askDetails:'Ask for details ↗',faqEyebrow:'ANY QUESTIONS?',faqTitle:'Let’s talk it through',askTelegram:'Ask on Telegram ↗',faq1:'Where can I buy ZAMELANO?',faq1Answer:'The brand operates online only. This website currently presents a catalogue concept. Actual products and prices — [fill in]. Please contact the brand on Telegram about purchases.',faq2:'Where do you deliver?',faq2Answer:'Courier delivery is available in Moscow and Moscow Region. The charge is based on the actual delivery cost. Delivery times — [fill in].',faq3:'Can I place a wholesale order?',faq3Answer:'Yes, wholesale orders start at 100 lingerie sets. Terms, prices and timing — [fill in]. Use the partner enquiry form below.',faq4:'How can I pay?',faq4Answer:'Online card payments and SBP are planned. The payment service and online cash register have not been connected yet. At this stage, you can prepare a Telegram enquiry without making a payment.',faq5:'What is your returns policy?',faq5Answer:'Exchange and return terms — [fill in]. The brand’s lawyers are preparing the documents. Please confirm the terms before buying.',reviews:'YOUR STORIES',reviewsTitle:'A place for your impressions',reviewsText:'Customer reviews — [fill in]. We have left room for real stories about ZAMELANO.',wholesaleEyebrow:'FOR OUR PARTNERS',wholesaleTitle:'Beautiful things<br><em>bring us together.</em>',wholesaleText:'Wholesale orders from 100 lingerie sets. Tell us what you have in mind and let’s discuss working together.',wholesaleButton:'Discuss a partnership',shop:'Boutique',customers:'For customers',contacts:'Stay in touch',wholesale:'Wholesale partners',footerTagline:'Lingerie. A mood. You.',faq:'Questions & answers',reviewsLink:'Reviews',returns:'Exchanges & returns',leaveRequest:'Leave an enquiry ↗',phonePending:'Brand phone: +7 [fill in]',legalDetails:'Business details',privacy:'Privacy policy',offer:'Terms of sale',draft:'Store concept',personalContact:'A PERSONAL CONVERSATION',name:'Name',phone:'Phone',time:'Preferred contact time',comment:'Comment / other preferences',wholesaleQuantity:'Number of lingerie sets',region:'Delivery region',moscow:'Moscow',mo:'Moscow Region',address:'Delivery address',consent:'I agree to the use of these details to respond to my enquiry.',requestInfo:'Your details are not stored on this website. You will see your enquiry text, which you can copy and send yourself to @Zamelano on Telegram. Personal data documents — [fill in].',prepareRequest:'Prepare enquiry',requestText:'Enquiry text',requestReady:'Your text is ready. The enquiry has not been sent.',copy:'Copy text',openTelegram:'Open Telegram ↗',telegramHelp:'If the text does not appear in Telegram, paste the copied text into the chat with @Zamelano and press Send.',editRequest:'Edit enquiry',modelName:'Model name — [fill in]',priceLabel:'Price',pricePending:'Price: [fill in]',stockPending:'Stock — [fill in]',outOfStock:'Out of stock',inStock:'In stock',cardConcept:'CONCEPT',detail:'View details',addFavorite:'Add to favourites',removeFavorite:'Remove from favourites',catalogCount:'concepts',productCount:'products',noResults:'Nothing here just yet',noResultsText:'Try changing your search or resetting the filters.',sortNotice:'Prices — [fill in]. Original order is retained for now.',productEyebrow:'VISUAL CONCEPT',productNote:'Actual products, variants and specifications will be added using the brand’s data. You can save this concept in your bag and prepare an enquiry.',addToCart:'Add to bag',askAvailability:'Ask about availability on Telegram ↗',added:'Added to your bag',cartEmpty:'Your choice starts here',cartEmptyText:'Add a lingerie set you like from the catalogue.',remove:'Remove',decrease:'Decrease quantity',increase:'Increase quantity',total:'Product total',pendingTotal:'[fill in]',deliverySummary:'Delivery: Moscow and Moscow Region, charged at actual cost. Timing — [fill in].',cartDisclaimer:'Your bag contains concepts. Prices and stock — [fill in]. Payment is not available yet; an enquiry lets you discuss your selection with the brand.',prepareOrder:'Prepare an enquiry',paymentMethods:'Card / SBP: [fill in] · awaiting connection',contactTitle:'Leave an enquiry',contactDescription:'Tell us how we can help. We will prepare your message for Telegram.',wholesaleRequestTitle:'Partnership enquiry',wholesaleDescription:'Wholesale starts at 100 sets. Prices, range and terms — [fill in].',orderTitle:'Enquiry about your selection',orderDescription:'Prices and stock need to be confirmed with the brand. This enquiry is not a paid order.',copied:'Text copied',copyFallback:'Please select and copy the enquiry text manually.',invalidPhone:'Enter a phone number with 10 to 15 digits.',invalidName:'Please enter your name.',requestHeader:'ZAMELANO enquiry',requestType:'Enquiry type',contactType:'Question for the brand',wholesaleType:'Wholesale partnership',orderType:'Enquiry about selected concepts',orderItems:'Selected lingerie sets',qty:'pcs',orderWarning:'Prices, actual models, sizes, colours and stock — [fill in]. Delivery at actual cost. This is an enquiry without payment; please confirm the details.',connectionError:'The catalogue is temporarily unavailable',connectionErrorText:'Refresh this page or contact the brand on Telegram.',reload:'Try again',backCatalog:'Back to the collection',articleDraft:'Editorial draft · to be approved by the brand',sizeGuideTitle:'How to choose your size',sizeGuideText:'Size chart, available sizes and fit information — [fill in] using the manufacturer’s data. We do not use a universal size chart here: measurements can vary between models.',sizeGuideStep1:'Use a soft measuring tape to measure your underbust, bust and hips.',sizeGuideStep2:'Compare your measurements with the manufacturer’s chart for the specific item — [fill in].',sizeGuideStep3:'Message the brand on Telegram if you would like help choosing.',legalPending:'Document — [fill in]. The brand’s lawyers are preparing the final version.',privacyText:'This website remembers your language, favourites and shopping bag in your browser. Contact details entered in the form are not saved in local storage or sent to a server. The text is passed to Telegram only when you open the link; you confirm sending the message yourself.',offerText:'Product details, prices, payment, delivery times and ordering terms — [fill in]. The catalogue concepts are not an offer to purchase the illustrated items.',returnText:'Exchange and return procedure, time limits and contact details — [fill in]. Confirm the terms with the brand before making a purchase.',individual:'Individual entrepreneur Evgeny Vitalyevich Zamelov',legalAddressLabel:'Registered business address',legalAddress:'[fill in]',taxId:'INN (tax ID)',registrationId:'OGRNIP (registration ID)',account:'Settlement account',correspondent:'Correspondent account',bic:'Bank BIC',bank:'Bank',bankName:'Sberbank PJSC',entrepreneurPhone:'Phone from the business card',entrepreneurEmail:'Email from the business card',taxSystem:'Tax regime',taxName:'Simplified taxation: income',legalAddressNote:'Sensitive business details and the precise address from the business card are excluded from this public demo. Confirmed public business details for production — [fill in].'
   }
 };
+Object.assign(dictionary.ru, {
+  heroSlider:'Настроение ZAMELANO', previousSlide:'Предыдущий слайд', nextSlide:'Следующий слайд',
+  slide:'Слайд', of:'из', showSlide:'Показать слайд', carousel:'карусель', slideRole:'слайд',
+  heroTitle2:'Твоё<br>настроение.<br><em>Твой выбор.</em>',
+  heroDescription2:'Для спокойного утра, нового дня и особенного вечера. Выбирай то, что близко тебе.',
+  heroTitle3:'Маленький<br>ритуал.<br><em>Только твой.</em>',
+  heroDescription3:'Личная история начинается с деталей. Познакомься с настроением ZAMELANO.'
+});
+Object.assign(dictionary.en, {
+  heroSlider:'The ZAMELANO mood', previousSlide:'Previous slide', nextSlide:'Next slide',
+  slide:'Slide', of:'of', showSlide:'Show slide', carousel:'carousel', slideRole:'slide',
+  heroTitle2:'Your<br>mood.<br><em>Your choice.</em>',
+  heroDescription2:'For a quiet morning, a new day and a special evening. Choose what feels right for you.',
+  heroTitle3:'A small<br>ritual.<br><em>Just for you.</em>',
+  heroDescription3:'A personal story starts with the details. Discover the mood of ZAMELANO.'
+});
 const t = key => dictionary[lang][key] ?? key;
 const productName = p => p.name?.[lang] || p.name?.ru || t('fill');
 const formatPrice = p => Number.isFinite(p.price) ? new Intl.NumberFormat(lang === 'ru' ? 'ru-RU' : 'en-GB', {style:'currency',currency:'RUB',maximumFractionDigits:2}).format(p.price) : t('pricePending');
 const statusText = p => p.stock === 0 ? t('outOfStock') : p.stock > 0 ? t('inStock') : t('stockPending');
 const isConcept = p => p.id.startsWith('concept-');
 const icon = name => `<svg aria-hidden="true"><use href="#icon-${name}"/></svg>`;
+
+const heroSlides = $$('.hero-slide');
+let heroSlideIndex = 0;
+function updateHeroSlider() {
+  $('#hero-slider').setAttribute('aria-roledescription', t('carousel'));
+  $('#hero-slide-track').style.setProperty('--hero-slide', heroSlideIndex);
+  heroSlides.forEach((slide, index) => {
+    const active = index === heroSlideIndex;
+    slide.inert = !active;
+    slide.setAttribute('aria-hidden', String(!active));
+    slide.setAttribute('aria-roledescription', t('slideRole'));
+    slide.setAttribute('aria-label', `${index + 1} ${t('of')} ${heroSlides.length}`);
+  });
+  $$('[data-hero-slide]').forEach((button, index) => {
+    const active = index === heroSlideIndex;
+    button.classList.toggle('is-active', active);
+    if (active) button.setAttribute('aria-current', 'true');
+    else button.removeAttribute('aria-current');
+    button.setAttribute('aria-label', `${t('showSlide')} ${index + 1} ${t('of')} ${heroSlides.length}`);
+  });
+  $('#hero-slide-count').textContent = `${String(heroSlideIndex + 1).padStart(2, '0')} / ${String(heroSlides.length).padStart(2, '0')}`;
+  $('#hero-slide-status').textContent = `${t('slide')} ${heroSlideIndex + 1} ${t('of')} ${heroSlides.length}`;
+}
+function selectHeroSlide(index) {
+  heroSlideIndex = (index + heroSlides.length) % heroSlides.length;
+  updateHeroSlider();
+}
+$('#hero-prev').addEventListener('click', () => selectHeroSlide(heroSlideIndex - 1));
+$('#hero-next').addEventListener('click', () => selectHeroSlide(heroSlideIndex + 1));
+$$('[data-hero-slide]').forEach(button => button.addEventListener('click', () => selectHeroSlide(Number(button.dataset.heroSlide))));
+$('#hero-slider').addEventListener('keydown', event => {
+  if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+    event.preventDefault();
+    selectHeroSlide(heroSlideIndex + (event.key === 'ArrowRight' ? 1 : -1));
+  } else if (event.key === 'Home' || event.key === 'End') {
+    event.preventDefault();
+    selectHeroSlide(event.key === 'Home' ? 0 : heroSlides.length - 1);
+  }
+});
+let heroSwipeStart = null;
+$('#hero-slide-window').addEventListener('pointerdown', event => {
+  if (event.button !== 0) return;
+  heroSwipeStart = {x:event.clientX, y:event.clientY, id:event.pointerId};
+  event.currentTarget.setPointerCapture(event.pointerId);
+  if (event.pointerType === 'mouse') event.preventDefault();
+});
+$('#hero-slide-window').addEventListener('pointerup', event => {
+  if (!heroSwipeStart || event.pointerId !== heroSwipeStart.id) return;
+  const dx = event.clientX - heroSwipeStart.x, dy = event.clientY - heroSwipeStart.y;
+  heroSwipeStart = null;
+  if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.3) selectHeroSlide(heroSlideIndex + (dx < 0 ? 1 : -1));
+});
+$('#hero-slide-window').addEventListener('pointercancel', () => { heroSwipeStart = null; });
 
 function translatePage() {
   document.documentElement.lang = lang;
@@ -40,7 +109,7 @@ function translatePage() {
   $('#language').innerHTML = lang === 'ru' ? 'RU <span>/ EN</span>' : 'EN <span>/ RU</span>';
   $('#language').setAttribute('aria-label', lang === 'ru' ? 'Switch to English' : 'Переключить на русский');
   document.querySelector('meta[name="description"]').content = lang === 'ru' ? 'ZAMELANO — женское нижнее бельё. Концепция интернет-магазина на русском и английском. Курьерская доставка по Москве и Московской области.' : 'ZAMELANO — women’s lingerie. A bilingual online boutique concept. Courier delivery in Moscow and Moscow Region.';
-  renderProducts(); updateCounts();
+  renderProducts(); updateCounts(); updateHeroSlider();
   if ($('#cart-dialog').open) renderCart();
   if ($('#product-dialog').open && selectedProductId) renderProductDetail(selectedProductId);
   if ($('#request-dialog').open) { updateRequestHeading(); if (!$('#request-result').hidden) prepareRequestText(); }
@@ -49,7 +118,7 @@ function translatePage() {
 
 function productCard(p) {
   const favorite = favorites.includes(p.id);
-  return `<article class="product-card"><div class="product-image-wrap"><button class="product-image-link" data-product="${escapeHtml(p.id)}" aria-label="${escapeHtml(productName(p))} — ${escapeHtml(t('detail'))}"><img src="${escapeHtml(p.image)}" alt="${escapeHtml(productName(p))} · ${escapeHtml(t('imageConcept'))}" loading="lazy" width="1122" height="1402"></button><button class="favorite-button ${favorite ? 'selected' : ''}" data-favorite="${escapeHtml(p.id)}" aria-label="${escapeHtml(t(favorite ? 'removeFavorite' : 'addFavorite'))}" aria-pressed="${favorite}">${icon('heart')}</button><span class="product-badge">${escapeHtml(p.stock === 0 ? t('outOfStock') : isConcept(p) ? t('cardConcept') : statusText(p))}</span></div><div class="product-info"><div><button class="product-name" data-product="${escapeHtml(p.id)}">${escapeHtml(productName(p))}</button><p>${escapeHtml(isConcept(p) ? t('modelName') : statusText(p))}</p></div><span class="product-price">${escapeHtml(formatPrice(p))}</span></div><div class="product-bottom"><span class="swatch" style="background:${paletteColors[p.palette] || '#dfd4ca'}" aria-label="${escapeHtml(t(p.palette))}"></span><button class="text-button" data-product="${escapeHtml(p.id)}">${escapeHtml(t('detail'))} <span>↗</span></button></div></article>`;
+  return `<article class="product-card"><div class="product-image-wrap"><button class="product-image-link" data-product="${escapeHtml(p.id)}" aria-label="${escapeHtml(productName(p))} — ${escapeHtml(t('detail'))}"><img src="${escapeHtml(p.image)}" alt="${escapeHtml(productName(p))} · ${escapeHtml(t('imageConcept'))}" loading="lazy" width="1122" height="1402"></button><button class="favorite-button ${favorite ? 'selected' : ''}" data-favorite="${escapeHtml(p.id)}" aria-label="${escapeHtml(t(favorite ? 'removeFavorite' : 'addFavorite'))}" aria-pressed="${favorite}">${icon('heart')}</button><span class="product-badge">${escapeHtml(p.stock === 0 ? t('outOfStock') : isConcept(p) ? t('cardConcept') : statusText(p))}</span></div><div class="product-info"><div><button class="product-name" data-product="${escapeHtml(p.id)}">${escapeHtml(productName(p))}</button><p>${escapeHtml(isConcept(p) ? t('modelName') : statusText(p))}</p></div><span class="product-price">${escapeHtml(formatPrice(p))}</span></div><div class="product-bottom"><span class="swatch" style="background:${paletteColors[p.palette] || '#dfd4ca'}" aria-label="${escapeHtml(t(p.palette))}"></span><button class="text-button" data-product="${escapeHtml(p.id)}">${escapeHtml(t('detail'))} <span class="brand-key" aria-hidden="true"></span></button></div></article>`;
 }
 function renderProducts() {
   const search = $('#search').value.trim().toLocaleLowerCase(lang);
