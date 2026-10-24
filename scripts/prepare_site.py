@@ -33,23 +33,23 @@ def prepare(target, output, base_url):
         destination.parent.mkdir(parents=True, exist_ok=True)
         if not destination.exists() or digest(item) != digest(destination):
             shutil.copyfile(item, destination)
-    page = output / 'index.html'
-    html = page.read_text(encoding='utf-8')
-    for name in ('robots', 'googlebot', 'yandex'):
-        html = re.sub(r'\s*<meta\s+name="' + name + r'"[^>]*>', '', html)
-    html = re.sub(r'\s*<link\s+rel="canonical"[^>]*>', '', html)
-    html = re.sub(r'\s*<meta\s+property="og:image"[^>]*>', '', html)
-    indexing = 'noindex, nofollow, noarchive' if target == 'demo' else 'index, follow'
-    metadata = '\n'.join([
-        f'  <meta name="robots" content="{indexing}">',
-        f'  <meta name="googlebot" content="{indexing}">',
-        f'  <meta name="yandex" content="{indexing}">',
-        f'  <link rel="canonical" href="{escape(base_url, quote=True)}">',
-        f'  <meta property="og:image" content="{escape(base_url, quote=True)}assets/ivory.webp">',
-    ])
-    html = html.replace('</head>', metadata + '\n</head>')
-    if page.read_text(encoding='utf-8') != html:
-        page.write_text(html, encoding='utf-8')
+    for page in output.rglob('*.html'):
+        html = page.read_text(encoding='utf-8')
+        for name in ('robots', 'googlebot', 'yandex'):
+            html = re.sub(r'\s*<meta\s+name="' + name + r'"[^>]*>', '', html)
+        html = re.sub(r'\s*<link\s+rel="canonical"[^>]*>', '', html)
+        html = re.sub(r'\s*<meta\s+property="og:image"[^>]*>', '', html)
+        indexing = 'noindex, nofollow, noarchive' if target == 'demo' else 'index, follow'
+        metadata = '\n'.join([
+            f'  <meta name="robots" content="{indexing}">',
+            f'  <meta name="googlebot" content="{indexing}">',
+            f'  <meta name="yandex" content="{indexing}">',
+            f'  <link rel="canonical" href="{escape(base_url + ("" if page.name == "index.html" else page.relative_to(output).as_posix()), quote=True)}">',
+            f'  <meta property="og:image" content="{escape(base_url, quote=True)}assets/ivory.webp">',
+        ])
+        html = html.replace('</head>', metadata + '\n</head>')
+        if page.read_text(encoding='utf-8') != html:
+            page.write_text(html, encoding='utf-8')
     # Crawlers must be able to read noindex. Project-level robots.txt on Pages
     # is not the origin's robots.txt; the HTML noindex tags are authoritative.
     robots = 'User-agent: *\nAllow: /\n'
@@ -58,10 +58,10 @@ def prepare(target, output, base_url):
         robots += f'Sitemap: {base_url}sitemap.xml\n'
         (output / 'sitemap.xml').write_text(
             '<?xml version="1.0" encoding="UTF-8"?>\n'
-            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
-            f'<url><loc>{escape(base_url)}</loc></url></urlset>\n', encoding='utf-8')
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
+            ''.join(f'<url><loc>{escape(base_url + ("" if page.name == "index.html" else page.relative_to(output).as_posix()))}</loc></url>' for page in sorted(output.rglob('*.html'))) + '</urlset>\n', encoding='utf-8')
     else:
-        robots += '# Demo indexing is disabled by noindex tags in index.html.\n'
+        robots += '# Demo indexing is disabled by noindex tags in every HTML page.\n'
     (output / 'robots.txt').write_text(robots, encoding='utf-8')
     (output / '.nojekyll').write_text('', encoding='utf-8')
     # This is a generated output directory. Remove files no longer in source,

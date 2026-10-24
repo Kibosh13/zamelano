@@ -23,9 +23,11 @@ SECRET_PATTERNS = [
 class Page(HTMLParser):
     def __init__(self):
         super().__init__()
-        self.ids, self.sources, self.anchors = [], [], []
+        self.ids, self.sources, self.anchors, self.documents = [], [], [], []
     def handle_starttag(self, tag, attrs):
         data = dict(attrs)
+        if 'data-document' in data:
+            self.documents.append((data['data-document'], data.get('data-document-section')))
         if 'id' in data:
             self.ids.append(data['id'])
         if 'src' in data:
@@ -50,18 +52,30 @@ def main():
         data = path.read_bytes()
         if any(re.search(pattern,data) for pattern in SECRET_PATTERNS):
             errors.append(f'Possible secret in {relative}; value suppressed')
-    page = Page()
-    page.feed((ROOT/'site/index.html').read_text(encoding='utf-8'))
-    if len(page.ids) != len(set(page.ids)):
-        errors.append('Duplicate HTML IDs')
-    for source in page.sources:
-        # Version queries refresh browser caches without changing the asset path.
-        asset_path = unquote(urlsplit(source).path)
-        if not (ROOT/'site'/asset_path).is_file():
-            errors.append(f'Missing static asset: {source}')
-    for anchor in page.anchors:
-        if anchor not in page.ids:
-            errors.append(f'Missing internal section: #{anchor}')
+    legal = json.loads((ROOT/'site/legal-documents.json').read_text())
+    documents = {item['id']: item for item in legal['documents']}
+    if set(documents) != {'privacy','offer','order-consent','newsletter-consent','review-consent'}:
+        errors.append('Missing legal documents')
+    settings = json.loads((ROOT/'site/document-links.json').read_text())
+    if set(settings['files']) != set(documents):
+        errors.append('File-link settings do not match document IDs')
+    for html in (ROOT/'site').glob('*.html'):
+        page = Page()
+        page.feed(html.read_text(encoding='utf-8'))
+        if len(page.ids) != len(set(page.ids)):
+            errors.append(f'Duplicate HTML IDs in {html.name}')
+        for source in page.sources:
+            asset_path = unquote(urlsplit(source).path)
+            if not (html.parent/asset_path).is_file():
+                errors.append(f'Missing static asset in {html.name}: {source}')
+        for anchor in page.anchors:
+            if anchor not in page.ids:
+                errors.append(f'Missing internal section in {html.name}: #{anchor}')
+        for doc_id, section in page.documents:
+            if doc_id not in documents:
+                errors.append(f'Unknown legal document: {doc_id}')
+            elif section and section not in {b.get('id') for b in documents[doc_id]['blocks']}:
+                errors.append(f'Missing legal section: {doc_id}/{section}')
     products = json.loads((ROOT/'site/catalog.json').read_text())['products']
     for product in products:
         if not (ROOT/'site'/product['image']).is_file():
