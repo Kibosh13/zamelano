@@ -1,4 +1,5 @@
 'use strict';
+window.ZamelanoCMS.ready.then(cms => {
 const $ = (s, root = document) => root.querySelector(s);
 const $$ = (s, root = document) => [...root.querySelectorAll(s)];
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -38,11 +39,13 @@ Object.assign(dictionary.en, {
   heroTitle3:'A small<br>ritual.<br><em>Just for you.</em>',
   heroDescription3:'A personal story starts with the details. Discover the mood of ZAMELANO.'
 });
+for (const language of ['ru','en']) Object.assign(dictionary[language], window.ZamelanoCMS.translations(cms,language));
 const t = key => dictionary[lang][key] ?? key;
+const telegramURL = text => { const url=new URL(cms.content.settings.contacts.telegram || 'https://t.me/Zamelano'); if(text)url.searchParams.set('text',text);return url.href; };
 const productName = p => p.name?.[lang] || p.name?.ru || t('fill');
 const formatPrice = p => Number.isFinite(p.price) ? new Intl.NumberFormat(lang === 'ru' ? 'ru-RU' : 'en-GB', {style:'currency',currency:'RUB',maximumFractionDigits:2}).format(p.price) : t('pricePending');
 const statusText = p => p.stock === 0 ? t('outOfStock') : p.stock > 0 ? t('inStock') : t('stockPending');
-const isConcept = p => p.id.startsWith('concept-');
+const isConcept = p => p.concept ?? p.id.startsWith('concept-');
 const icon = name => `<svg aria-hidden="true"><use href="#icon-${name}"/></svg>`;
 
 const heroSlides = $$('.hero-slide');
@@ -119,17 +122,18 @@ function translatePage() {
   $('#language').innerHTML = lang === 'ru' ? 'RU <span>/ EN</span>' : 'EN <span>/ RU</span>';
   $('#language').setAttribute('aria-label', lang === 'ru' ? 'Switch to English' : 'Переключить на русский');
   document.querySelector('meta[name="description"]').content = lang === 'ru' ? 'ZAMELANO — женское нижнее бельё. Концепция интернет-магазина на русском и английском. Курьерская доставка по Москве и Московской области.' : 'ZAMELANO — women’s lingerie. A bilingual online boutique concept. Courier delivery in Moscow and Moscow Region.';
-  renderProducts(); updateCounts(); updateHeroSlider();
+  rebuildFilters(); renderProducts(); updateCounts(); updateHeroSlider();
   if ($('#cart-dialog').open) renderCart();
   if ($('#product-dialog').open && selectedProductId) renderProductDetail(selectedProductId);
   if ($('#request-dialog').open) { updateRequestHeading(); if (!$('#request-result').hidden) prepareRequestText(); }
   if ($('#content-dialog').open && contentKind) renderContent(contentKind);
   decorateBrandSelects();
+  window.ZamelanoCMS.apply(cms,lang);
 }
 
 function productCard(p) {
   const favorite = favorites.includes(p.id);
-  return `<article class="product-card"><div class="product-image-wrap"><button class="product-image-link" data-product="${escapeHtml(p.id)}" aria-label="${escapeHtml(productName(p))} — ${escapeHtml(t('detail'))}"><img src="${escapeHtml(p.image)}" alt="${escapeHtml(productName(p))} · ${escapeHtml(t('imageConcept'))}" loading="lazy" width="1122" height="1402"></button><button class="favorite-button ${favorite ? 'selected' : ''}" data-favorite="${escapeHtml(p.id)}" aria-label="${escapeHtml(t(favorite ? 'removeFavorite' : 'addFavorite'))}" aria-pressed="${favorite}">${icon('heart')}</button><span class="product-badge">${escapeHtml(p.stock === 0 ? t('outOfStock') : isConcept(p) ? t('cardConcept') : statusText(p))}</span></div><div class="product-info"><div><button class="product-name" data-product="${escapeHtml(p.id)}">${escapeHtml(productName(p))}</button><p>${escapeHtml(isConcept(p) ? t('modelName') : statusText(p))}</p></div><span class="product-price">${escapeHtml(formatPrice(p))}</span></div><div class="product-bottom"><span class="swatch" style="background:${paletteColors[p.palette] || '#dfd4ca'}" aria-label="${escapeHtml(t(p.palette))}"></span><button class="text-button" data-product="${escapeHtml(p.id)}">${escapeHtml(t('detail'))} <span class="brand-key" aria-hidden="true"></span></button></div></article>`;
+  return `<article class="product-card"><div class="product-image-wrap"><button class="product-image-link" data-product="${escapeHtml(p.id)}" aria-label="${escapeHtml(productName(p))} — ${escapeHtml(t('detail'))}"><img src="${escapeHtml(p.image)}" alt="${escapeHtml(productName(p))}${isConcept(p) ? ' · '+escapeHtml(t('imageConcept')) : ''}" loading="lazy" width="1122" height="1402"></button><button class="favorite-button ${favorite ? 'selected' : ''}" data-favorite="${escapeHtml(p.id)}" aria-label="${escapeHtml(t(favorite ? 'removeFavorite' : 'addFavorite'))}" aria-pressed="${favorite}">${icon('heart')}</button><span class="product-badge">${escapeHtml(p.stock === 0 ? t('outOfStock') : isConcept(p) ? t('cardConcept') : statusText(p))}</span></div><div class="product-info"><div><button class="product-name" data-product="${escapeHtml(p.id)}">${escapeHtml(productName(p))}</button><p>${escapeHtml(isConcept(p) ? t('modelName') : statusText(p))}</p></div><span class="product-price">${Number.isFinite(p.price)&&p.oldPrice>p.price ? `<span class="product-old-price">${escapeHtml(formatPrice({price:p.oldPrice}))}</span>` : ''}${escapeHtml(formatPrice(p))}</span></div><div class="product-bottom"><span class="swatch" style="background:${paletteColors[p.palette] || '#dfd4ca'}" aria-label="${escapeHtml(isConcept(p)?t(p.palette):(p.colors[0]||p.palette))}"></span><button class="text-button" data-product="${escapeHtml(p.id)}">${escapeHtml(t('detail'))} <span class="brand-key" aria-hidden="true"></span></button></div></article>`;
 }
 function renderProducts() {
   const search = $('#search').value.trim().toLocaleLowerCase(lang);
@@ -137,7 +141,7 @@ function renderProducts() {
   const minimum = $('#price-min').value, maximum = $('#price-max').value;
   let result = products.filter(p => {
     const text = `${productName(p)} ${p.description?.[lang] || ''} ${t(p.palette)}`.toLocaleLowerCase(lang);
-    return (category === 'all' || p.palette === category) && (!favoriteView || favorites.includes(p.id)) && (!search || text.includes(search)) && (color === 'all' || p.palette === color) && (collection === 'all' || p.collection === collection) && (size === 'all' || (size === 'unknown' ? !p.sizes.length : p.sizes.includes(size))) && (minimum === '' || (Number.isFinite(p.price) && p.price >= Number(minimum))) && (maximum === '' || (Number.isFinite(p.price) && p.price <= Number(maximum)));
+    return (category === 'all' || p.category === category) && (!favoriteView || favorites.includes(p.id)) && (!search || text.includes(search)) && (color === 'all' || p.palette === color || p.colors.includes(color)) && (collection === 'all' || p.collection === collection) && (size === 'all' || (size === 'unknown' ? !p.sizes.length : p.sizes.includes(size))) && (minimum === '' || (Number.isFinite(p.price) && p.price >= Number(minimum))) && (maximum === '' || (Number.isFinite(p.price) && p.price <= Number(maximum)));
   });
   if ($('#sort').value !== 'default') {
     const direction = $('#sort').value === 'asc' ? 1 : -1;
@@ -181,14 +185,18 @@ document.addEventListener('click', event => {
   const articleButton = event.target.closest('[data-article]'); if (articleButton) showContent(`article:${articleButton.dataset.article}`);
   const legalButton = event.target.closest('[data-legal]'); if (legalButton) showContent(`legal:${legalButton.dataset.legal}`);
   if (event.target.closest('#empty-reset')) resetFilters();
+  if (event.target.closest('#contact-open')) openRequest('contact');
+  if (event.target.closest('#menu-dialog nav a')) closeDialog($('#menu-dialog'));
 });
 function renderProductDetail(id) {
   const p = products.find(item => item.id === id); if (!p) return;
   const sizeOptions = p.sizes.length ? p.sizes.map(size => `<option value="${escapeHtml(size)}">${escapeHtml(size)}</option>`).join('') : `<option value="unknown">${t('fill')}</option>`;
   const colorOptions = p.colors.length ? p.colors.map(color => `<option value="${escapeHtml(color)}">${escapeHtml(color)}</option>`).join('') : `<option value="unknown">${t('fill')}</option>`;
-  $('#product-detail').innerHTML = `<div class="product-detail-grid"><img class="detail-image" src="${escapeHtml(p.image)}" alt="${escapeHtml(productName(p))} · ${escapeHtml(t('imageConcept'))}"><div class="detail-copy"><p class="eyebrow">${escapeHtml(isConcept(p) ? t('productEyebrow') : p.collection)}</p><h2 id="detail-title">${escapeHtml(productName(p))}</h2><p>${escapeHtml(p.description?.[lang] || t('fill'))}</p><p class="detail-price">${escapeHtml(formatPrice(p))}</p><p>${escapeHtml(statusText(p))}</p><div class="detail-fields"><label><span>${t('size')}</span><select id="detail-size">${sizeOptions}</select></label><label><span>${t('color')}</span><select id="detail-color">${colorOptions}</select></label></div><button class="text-button" id="detail-size-help" data-brand-key>${t('openSize')}</button><button class="button primary" id="add-to-cart" ${p.stock === 0 ? 'disabled' : ''}><span>${t('addToCart')}</span><span>+</span></button><a class="underlined-link" href="https://t.me/Zamelano" target="_blank" rel="noopener" data-brand-key>${t('askAvailability')}</a><p class="detail-note">${t('productNote')}</p></div></div>`;
+  $('#product-detail').innerHTML = `<div class="product-detail-grid"><img class="detail-image" src="${escapeHtml(p.image)}" alt="${escapeHtml(productName(p))}${isConcept(p) ? ' · '+escapeHtml(t('imageConcept')) : ''}"><div class="detail-copy"><p class="eyebrow">${escapeHtml(isConcept(p) ? t('productEyebrow') : p.collection)}</p><h2 id="detail-title">${escapeHtml(productName(p))}</h2><p>${escapeHtml(p.description?.[lang] || t('fill'))}</p><p class="detail-price">${escapeHtml(formatPrice(p))}</p><p>${escapeHtml(statusText(p))}</p><div class="detail-fields"><label><span>${t('size')}</span><select id="detail-size">${sizeOptions}</select></label><label><span>${t('color')}</span><select id="detail-color">${colorOptions}</select></label></div><button class="text-button" id="detail-size-help" data-brand-key>${t('openSize')}</button><button class="button primary" id="add-to-cart" ${p.stock === 0 ? 'disabled' : ''}><span>${t('addToCart')}</span><span>+</span></button><a class="underlined-link" href="${escapeHtml(telegramURL())}" target="_blank" rel="noopener" data-brand-key>${t('askAvailability')}</a>${isConcept(p) ? `<p class="detail-note">${t('productNote')}</p>` : ''}</div></div>`;
   $('#add-to-cart').addEventListener('click', () => addToCart(p.id, $('#detail-size').value, $('#detail-color').value));
   $('#detail-size-help').addEventListener('click', () => showContent('size'));
+  const gallery=(p.images||[]).filter(Boolean);
+  if(gallery.length>1){const image=$('.detail-image',$('#product-detail'));const wrap=document.createElement('div');image.before(wrap);wrap.append(image);const thumbs=document.createElement('div');thumbs.className='detail-gallery-thumbnails';thumbs.innerHTML=gallery.map((src,i)=>`<button type="button" aria-label="${escapeHtml(productName(p))}, ${i+1}"><img src="${escapeHtml(src)}" alt=""></button>`).join('');wrap.append(thumbs);$$('button',thumbs).forEach((button,i)=>button.addEventListener('click',()=>image.src=gallery[i]));}
   decorateBrandSelects($('#product-detail'));
 }
 function addToCart(id, size, color) {
@@ -209,7 +217,7 @@ function renderCart() {
   const priceKnown = cart.every(line => Number.isFinite(products.find(p => p.id === line.id).price));
   const sum = cart.reduce((total,line) => total + (products.find(p => p.id === line.id).price ?? 0) * line.quantity, 0);
   const total = priceKnown ? formatPrice({price:sum}) : t('pendingTotal');
-  $('#cart-content').innerHTML = `${lines}<div class="cart-summary"><div class="cart-total"><span>${t('total')}</span><span>${escapeHtml(total)}</span></div><p>${t('deliverySummary')}</p><p class="notice">${t('cartDisclaimer')}</p><button class="button primary" id="checkout"><span>${t('prepareOrder')}</span><span class="brand-key" aria-hidden="true"></span></button><p class="micro">${t('paymentMethods')}</p><p class="cart-legal"><a href="documents.html#privacy" data-document="privacy" >${t('privacy')}</a> · <a href="documents.html#offer" data-document="offer" >${t('offer')}</a></p></div>`;
+  $('#cart-content').innerHTML = `${lines}<div class="cart-summary"><div class="cart-total"><span>${t('total')}</span><span>${escapeHtml(total)}</span></div><p>${t('deliverySummary')}</p><p class="notice">${cart.some(line=>isConcept(products.find(p=>p.id===line.id))) ? t('cartDisclaimer') : t('cartDisclaimerLive')}</p><button class="button primary" id="checkout"><span>${t('prepareOrder')}</span><span class="brand-key" aria-hidden="true"></span></button><p class="micro">${t('paymentMethods')}</p><p class="cart-legal"><a href="documents.html#privacy" data-document="privacy" >${t('privacy')}</a> · <a href="documents.html#offer" data-document="offer" >${t('offer')}</a></p></div>`;
   $$('[data-quantity]', $('#cart-content')).forEach(button => button.addEventListener('click', () => {
     const i = Number(button.dataset.quantity), change = Number(button.dataset.change); if (!cart[i]) return;
     cart[i].quantity += change; if (cart[i].quantity <= 0) cart.splice(i,1);
@@ -223,7 +231,7 @@ function updateRequestHeading() {
   $('#request-description').textContent = t(requestKind === 'order' ? 'orderDescription' : requestKind === 'wholesale' ? 'wholesaleDescription' : 'contactDescription');
 }
 function clearPersonalData() {
-  $('#request-form').reset(); $('#request-text').value = ''; $('#telegram-request').href = 'https://t.me/Zamelano';
+  $('#request-form').reset(); $('#request-text').value = ''; $('#telegram-request').href = telegramURL();
 }
 function openRequest(kind) {
   requestKind = kind; clearPersonalData(); updateRequestHeading();
@@ -243,12 +251,12 @@ function prepareRequestText() {
   if (requestKind === 'order') {
     lines.push(`${t('region')}: ${t(form.get('region') === 'mo' ? 'mo' : 'moscow')}`,`${t('address')}: ${form.get('address')}`,'',`${t('orderItems')}:`);
     cart.forEach(line => { const p = products.find(item => item.id === line.id); if (p) lines.push(`• ${productName(p)} [${p.id}], ${line.quantity} ${t('qty')}; ${t('size')}: ${line.size === 'unknown' ? t('fill') : line.size}; ${t('color')}: ${line.color === 'unknown' ? t('fill') : line.color}; ${formatPrice(p)}`); });
-    lines.push('',t('orderWarning'));
+    lines.push('',t(cart.some(line=>isConcept(products.find(p=>p.id===line.id))) ? 'orderWarning' : 'orderWarningLive'));
   }
   lines.push('',`${t('comment')}: ${form.get('comment') || t('fill')}`);
   const text = lines.join('\n');
   $('#request-text').value = text;
-  $('#telegram-request').href = `https://t.me/Zamelano?text=${encodeURIComponent(text)}`;
+  $('#telegram-request').href = telegramURL(text);
   document.dispatchEvent(new CustomEvent('zamelano:request-prepared'));
 }
 $('#request-form').addEventListener('submit', event => {
@@ -267,25 +275,21 @@ $('#copy-request').addEventListener('click', async () => {
 });
 $('#edit-request').addEventListener('click', () => { $('#request-form').hidden = false; $('#request-result').hidden = true; });
 
-const articles = {
-  fit:{ru:{title:'Как найти своё бельё',paragraphs:['Хороший выбор начинается с вопроса: какое ощущение вы ищете? Для спокойного дня, нарядного вечера или просто для себя — сценарий помогает сформулировать предпочтения.','Перед заказом проверьте размерную сетку конкретной модели, состав ткани и рекомендации производителя. Размер, цвет, посадку и наличие будущих моделей ZAMELANO предстоит уточнить — [заполнить].','Не ориентируйтесь только на картинку. Если нужны подробности о товаре, задайте бренду вопрос в Telegram.']},en:{title:'Finding your lingerie',paragraphs:['A thoughtful choice starts with a question: how would you like to feel? A quiet day, an evening out, or simply something for yourself — the occasion can help you understand your preferences.','Before ordering, check the specific model’s size chart, fabric composition and manufacturer’s recommendations. Sizes, colours, fit and availability of future ZAMELANO models still need to be confirmed — [fill in].','A photograph is only part of the picture. If you need more product details, ask the brand on Telegram.']}},
-  care:{ru:{title:'Искусство бережного ухода',paragraphs:['Первый ориентир — этикетка изделия и рекомендации производителя. Температура, способ стирки и сушки зависят от материала; универсальных условий для всего белья здесь нет.','Перед стиркой обратите внимание на застёжки, кружево и декоративные элементы. Выбирайте режим ухода по инструкции конкретного изделия.','Для каждой модели ZAMELANO рекомендации производителя будут добавлены в карточку товара — [заполнить].']},en:{title:'The art of gentle care',paragraphs:['Start with the garment label and the manufacturer’s instructions. Washing temperature, method and drying depend on the material; there is no single care routine for all lingerie.','Before washing, pay attention to fastenings, lace and decorative details. Follow the care instructions for the particular item.','Manufacturer’s care instructions will be added to each ZAMELANO product page — [fill in].']}},
-  news:{ru:{title:'Новая глава ZAMELANO',paragraphs:['Мы знакомим вас с концепцией онлайн-бутика ZAMELANO. Персиковая палитра, мягкий свет и лаконичная типографика передают настроение будущего сайта.','Изображения в концепции созданы с помощью ИИ. Реальные фотографии, ассортимент, цены и описание коллекции — [заполнить].','Дата публикации новости и материалы бренда — [заполнить]. За подробностями можно обратиться в Telegram @Zamelano.']},en:{title:'A new chapter for ZAMELANO',paragraphs:['Introducing the concept for the ZAMELANO online boutique. A peach palette, soft light and understated typography set the mood for the future website.','Concept images were created with AI. Actual photographs, range, prices and collection details — [fill in].','News publication date and brand materials — [fill in]. For details, contact @Zamelano on Telegram.']}}
-};
+const articles = Object.fromEntries((cms.content.articles||[]).map(article=>[article.id,Object.fromEntries(['ru','en'].map(language=>[language,{title:article.title[language]||article.title.ru,paragraphs:article.paragraphs[language]?.length?article.paragraphs[language]:article.paragraphs.ru}]))]));
 function showContent(kind) { contentKind = kind; renderContent(kind); openDialog('#content-dialog'); }
 function renderContent(kind) {
   let html = '';
   if (kind === 'size') {
-    html = `<p class="eyebrow">ZAMELANO</p><h2>${t('sizeGuideTitle')}</h2><p>${t('sizeGuideText')}</p><ol><li>${t('sizeGuideStep1')}</li><li>${t('sizeGuideStep2')}</li><li>${t('sizeGuideStep3')}</li></ol><a class="underlined-link" href="https://t.me/Zamelano" target="_blank" rel="noopener" data-brand-key>${t('askTelegram')}</a>`;
+    html = `<p class="eyebrow">ZAMELANO</p><h2>${t('sizeGuideTitle')}</h2><p>${t('sizeGuideText')}</p><ol><li>${t('sizeGuideStep1')}</li><li>${t('sizeGuideStep2')}</li><li>${t('sizeGuideStep3')}</li></ol><a class="underlined-link" href="${escapeHtml(telegramURL())}" target="_blank" rel="noopener" data-brand-key>${t('askTelegram')}</a>`;
   } else if (kind.startsWith('article:')) {
     const article = articles[kind.split(':')[1]]?.[lang]; if (!article) return;
-    html = `<p class="eyebrow">${t('journal')}</p><h2>${escapeHtml(article.title)}</h2><p class="notice">${t('articleDraft')}</p>${article.paragraphs.map(p => `<p>${escapeHtml(p)}</p>`).join('')}<a class="underlined-link" href="https://t.me/Zamelano" target="_blank" rel="noopener" data-brand-key>${t('askTelegram')}</a>`;
+    html = `<p class="eyebrow">${t('journal')}</p><h2>${escapeHtml(article.title)}</h2><p class="notice">${t('articleDraft')}</p>${article.paragraphs.map(p => `<p>${escapeHtml(p)}</p>`).join('')}<a class="underlined-link" href="${escapeHtml(telegramURL())}" target="_blank" rel="noopener" data-brand-key>${t('askTelegram')}</a>`;
   } else if (kind === 'legal:details') {
     const values = [['legalDetails',t('individual')],['taxId',t('fill')],['registrationId',t('fill')],['legalAddressLabel',t('legalAddress')],['entrepreneurPhone',t('fill')],['entrepreneurEmail',t('fill')],['account',t('fill')],['correspondent',t('fill')],['bic',t('fill')],['bank',t('bankName')],['taxSystem',t('taxName')]];
     html = `<p class="eyebrow">ZAMELANO</p><h2>${t('legalDetails')}</h2><dl>${values.map(([key,value]) => `<dt>${t(key)}</dt><dd>${escapeHtml(value)}</dd>`).join('')}</dl><p class="notice">${t('legalAddressNote')}</p>`;
   } else {
     const key = kind.split(':')[1]; const body = key === 'privacy' ? 'privacyText' : key === 'returns' ? 'returnText' : 'offerText';
-    html = `<p class="eyebrow">ZAMELANO</p><h2>${t(key)}</h2><p class="notice">${t('legalPending')}</p><p>${t(body)}</p><a class="underlined-link" href="https://t.me/Zamelano" target="_blank" rel="noopener" data-brand-key>${t('askTelegram')}</a>`;
+    html = `<p class="eyebrow">ZAMELANO</p><h2>${t(key)}</h2><p class="notice">${t('legalPending')}</p><p>${t(body)}</p><a class="underlined-link" href="${escapeHtml(telegramURL())}" target="_blank" rel="noopener" data-brand-key>${t('askTelegram')}</a>`;
   }
   $('#content-body').innerHTML = html.replace('<h2>', '<h2 id="content-title">');
 }
@@ -303,23 +307,20 @@ $$('[data-category]').forEach(button => button.addEventListener('click', () => {
 $('#sort').addEventListener('change', () => { renderProducts(); if (products.every(p => !Number.isFinite(p.price)) && $('#sort').value !== 'default') toast(t('sortNotice')); });
 $('#reset-filters').addEventListener('click',resetFilters);
 $('#wholesale-open').addEventListener('click', () => openRequest('wholesale'));
-$('#contact-open').addEventListener('click', () => openRequest('contact'));
 $('#size-help').addEventListener('click', () => showContent('size'));
 $('#menu-open').addEventListener('click', () => openDialog('#menu-dialog'));
-$$('#menu-dialog nav a').forEach(a => a.addEventListener('click', () => closeDialog($('#menu-dialog'))));
 
-async function loadCatalog() {
-  try {
-    const response = await fetch('catalog.json'); if (!response.ok) throw new Error('Catalogue fetch failed');
-    const data = await response.json();
-    if (!Array.isArray(data.products)) throw new Error('Invalid catalogue');
-    products = data.products.filter(p => p && typeof p.id === 'string' && typeof p.name?.ru === 'string' && typeof p.image === 'string' && /^assets\/[\w.-]+$/.test(p.image) && Array.isArray(p.sizes) && Array.isArray(p.colors));
-    cart = cart.filter(line => products.some(p => p.id === line.id)); favorites = favorites.filter(id => products.some(p => p.id === id));
-    writeLocal('zamelano-cart',cart); writeLocal('zamelano-favorites',favorites); translatePage();
-  } catch {
-    translatePage();
-    $('#product-grid').innerHTML = `<div class="empty-state"><h3>${t('connectionError')}</h3><p>${t('connectionErrorText')}</p><button class="button secondary" id="reload-catalog">${t('reload')}</button></div>`;
-    $('#reload-catalog').addEventListener('click', loadCatalog);
-  }
+function rebuildFilters() {
+  const populate=(selector,values,allKey)=>{const select=$(selector),current=select.value;select.innerHTML=`<option value="all">${escapeHtml(t(allKey))}</option>`+values.map(value=>`<option value="${escapeHtml(value)}">${escapeHtml(value==='unknown'?t('fill'):(dictionary[lang][value]||value))}</option>`).join('');if([...select.options].some(o=>o.value===current))select.value=current;};
+  populate('#filter-size',[...new Set(products.flatMap(p=>p.sizes.length?p.sizes:['unknown']))],'allSizes');
+  populate('#filter-color',[...new Set(products.flatMap(p=>p.colors.length?p.colors:[p.palette]))].filter(Boolean),'allColors');
+  populate('#filter-collection',[...new Set(products.map(p=>p.collection))].filter(Boolean),'allCollections');
 }
-translatePage(); loadCatalog();
+function loadCatalog() {
+  products=(cms.catalog.products||[]).filter(p=>p&&typeof p.id==='string'&&typeof p.name?.ru==='string'&&window.ZamelanoCMS.safeURL(p.image)&&Array.isArray(p.sizes)&&Array.isArray(p.colors)&&(p.status!=='trash')&&(p.status!=='draft'||cms.preview)).map(p=>({...p,category:p.category==='set'&&(p.concept??p.id.startsWith('concept-'))?p.palette:p.category}));
+  cart=cart.filter(line=>products.some(p=>p.id===line.id));favorites=favorites.filter(id=>products.some(p=>p.id===id));
+  writeLocal('zamelano-cart',cart);writeLocal('zamelano-favorites',favorites);translatePage();
+}
+loadCatalog();
+
+}).catch(error=>{console.error('ZAMELANO: content unavailable');const grid=document.querySelector('#product-grid');if(grid)grid.innerHTML='<p class="cms-error">Не удалось загрузить каталог. Обновите страницу.</p>';});

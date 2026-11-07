@@ -5,7 +5,7 @@
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const pageMode = document.body.hasAttribute('data-documents-page');
   const noticeKey = 'zamelano-cookie-notice';
-  const noticeVersion = 'technical-1';
+  const noticeVersion = () => cmsData?.content.settings.cookieNoticeVersion || 'technical-1';
   let bundle = null, links = {files:{}}, selected = 'privacy', section = null, consentAt = null;
   const ui = {
     ru: {
@@ -30,6 +30,7 @@
     }
   };
   const language = () => document.documentElement.lang === 'en' ? 'en' : 'ru';
+  let cmsData=null;
   const t = key => ui[language()][key];
   const base = new URL('./', location.href);
   const safeURL = value => {
@@ -38,7 +39,7 @@
   };
   const siteURL = () => safeURL(links.siteUrl) || base.href;
   function documentURL(id, targetSection = null) {
-    const url = new URL('documents.html', base);
+    const url = new URL(window.ZamelanoCMS.docsRoute, base);
     if (targetSection) url.searchParams.set('section', targetSection);
     url.hash = id;
     return url.href;
@@ -86,7 +87,7 @@
   function renderNavigation(container) {
     if (!container || !bundle) return;
     container.setAttribute('aria-label', t('navigation'));
-    container.innerHTML = `<p class="eyebrow">${t('documents')}</p>` + bundle.documents.map((doc,index) => `<a href="${escape(documentURL(doc.id))}" data-document="${doc.id}"${doc.id === selected ? ' aria-current="page"' : ''}><span class="legal-nav-number">0${index+1}</span><span>${escape(doc.label[language()])}</span></a>`).join('');
+    container.innerHTML = `<p class="eyebrow">${t('documents')}</p>` + bundle.documents.filter(doc=>doc.visible!==false).map((doc,index) => `<a href="${escape(documentURL(doc.id))}" data-document="${doc.id}"${doc.id === selected ? ' aria-current="page"' : ''}><span class="legal-nav-number">0${index+1}</span><span>${escape(doc.label[language()])}</span></a>`).join('');
   }
   function jumpToSection(article) {
     if (!section) return;
@@ -121,7 +122,7 @@
     }
   }
   function cookieSeen() {
-    try { return JSON.parse(localStorage.getItem(noticeKey))?.version === noticeVersion; } catch { return false; }
+    try { return JSON.parse(localStorage.getItem(noticeKey))?.version === noticeVersion(); } catch { return false; }
   }
   function renderLabels() {
     $$('[data-legal-i18n]').forEach(el => el.textContent = t(el.dataset.legalI18n));
@@ -134,6 +135,7 @@
     const langButton = $('#legal-language'); if (langButton) { langButton.textContent = language() === 'ru' ? 'RU / EN' : 'EN / RU'; langButton.setAttribute('aria-label',language() === 'ru' ? 'Switch to English' : 'Переключить на русский'); }
     updateFormConsent();
     if (pageMode || $('#legal-dialog')?.open) renderSelected();
+    if(pageMode&&cmsData)window.ZamelanoCMS.apply(cmsData,language());
   }
   function updateFormConsent() {
     const form = $('#request-form'); if (!form) return;
@@ -149,10 +151,10 @@
   $('#legal-dialog-close')?.addEventListener('click',() => $('#legal-dialog').close());
   $('#legal-dialog')?.addEventListener('close',() => document.body.classList.toggle('modal-open',Boolean($('dialog[open]'))));
   $('#cookie-understood')?.addEventListener('click',() => {
-    try { localStorage.setItem(noticeKey,JSON.stringify({version:noticeVersion,acknowledgedAt:new Date().toISOString()})); } catch {}
+    try { localStorage.setItem(noticeKey,JSON.stringify({version:noticeVersion(),acknowledgedAt:new Date().toISOString()})); } catch {}
     $('#cookie-notice').hidden = true;
   });
-  $$('[data-cookie-open]').forEach(button => button.addEventListener('click',() => { $('#cookie-notice').hidden = false; $('#cookie-understood').focus({preventScroll:true}); }));
+  document.addEventListener('click',event=>{if(event.target.closest('[data-cookie-open]')){ $('#cookie-notice').hidden=false; $('#cookie-understood').focus({preventScroll:true}); }});
   const form = $('#request-form');
   if (form) {
     $('[name="consent"]',form).addEventListener('change',event => { consentAt = event.target.checked ? new Date() : null; updateFormConsent(); });
@@ -163,7 +165,7 @@
     const time = new Intl.DateTimeFormat(language() === 'ru' ? 'ru-RU' : 'en-GB',{dateStyle:'short',timeStyle:'medium',timeZone:'Europe/Moscow'}).format(consentAt);
     const lines = [`${t('consentRecord')}: ${time} (${t('consentTimeZone')}; ${consentAt.toISOString()}).`,`${t('policyVersion')} ${bundle.policyVersion}.`,`${t('consentVersion')} ${bundle.packetDate}.`];
     $('#request-text').value += '\n\n'+lines.join('\n');
-    $('#telegram-request').href = `https://t.me/Zamelano?text=${encodeURIComponent($('#request-text').value)}`;
+    const url=new URL(cmsData?.content.settings.contacts.telegram || 'https://t.me/Zamelano');url.searchParams.set('text',$('#request-text').value);$('#telegram-request').href=url.href;
   });
   $('#legal-language')?.addEventListener('click',() => {
     const next = language() === 'ru' ? 'en' : 'ru';
@@ -179,11 +181,12 @@
   if (!cookieSeen()) $('#cookie-notice').hidden = false;
   async function loadDocuments() {
     try {
-      const [documentsResponse,linksResponse] = await Promise.all([fetch('legal-documents.json',{cache:'no-cache'}),fetch('document-links.json',{cache:'no-cache'})]);
-      if (!documentsResponse.ok || !linksResponse.ok) throw new Error('Document resource unavailable');
-      const [data,settings] = await Promise.all([documentsResponse.json(),linksResponse.json()]);
+      cmsData=await window.ZamelanoCMS.ready;
+      const data=cmsData.documents,settings=cmsData.links;
+      for(const language of ['ru','en'])Object.assign(ui[language],cmsData.content.legalUI?.[language]||{});
+      if(pageMode)window.ZamelanoCMS.apply(cmsData,language());
       if (!Array.isArray(data.documents) || !data.documents.length) throw new Error('Invalid document bundle');
-      bundle = data; links = settings; renderLabels();
+      bundle = data; links = settings; renderLabels(); $('#cookie-notice').hidden=cookieSeen();
     } catch {
       const article = $(pageMode ? '#legal-page-article' : '#legal-dialog-article');
       if (article) article.innerHTML = `<p role="alert">${t('error')}</p><button class="button secondary" id="legal-retry">${t('retry')}</button>`;
