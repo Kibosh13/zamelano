@@ -50,16 +50,42 @@ def prepare(target, output, base_url):
         html = html.replace('</head>', metadata + '\n</head>')
         if page.read_text(encoding='utf-8') != html:
             page.write_text(html, encoding='utf-8')
+    if target == 'production':
+        for item in (ROOT/'server').rglob('*'):
+            if not item.is_file():
+                continue
+            relative = item.relative_to(ROOT/'server')
+            expected.add(relative.as_posix())
+            destination = output / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            if not destination.exists() or digest(item) != digest(destination):
+                shutil.copyfile(item, destination)
+        for old, new in [('app.js','storefront.js'),('legal.js','document-reader.js'),('styles.css','theme.css')]:
+            shutil.copyfile(output/old, output/new)
+            expected.add(new)
+            expected.discard(old)
+        for name in ('index', 'documents'):
+            page = output / (name + '.html')
+            html = page.read_text(encoding='utf-8').replace('<html lang="ru">', '<html lang="ru" data-cms="server">')
+            html = html.replace('documents.html', 'documents.php').replace('app.js?v=', 'storefront.js?v=').replace('legal.js?v=', 'document-reader.js?v=').replace('styles.css?v=', 'theme.css?v=').replace('href="index.html"', 'href="./"')
+            view = output / (name + '.view.php')
+            view.write_text('<?php http_response_code(404); exit; ?>\n' + html, encoding='utf-8')
+            expected.add(view.relative_to(output).as_posix())
+            if name == 'index':
+                expected.remove('index.html')
+            else:
+                page.write_text(html, encoding='utf-8')
     # Crawlers must be able to read noindex. Project-level robots.txt on Pages
     # is not the origin's robots.txt; the HTML noindex tags are authoritative.
     robots = 'User-agent: *\nAllow: /\n'
     if target == 'production':
         expected.add('sitemap.xml')
         robots += f'Sitemap: {base_url}sitemap.xml\n'
+        page_urls = [base_url + ("" if page.name == "index.html" else "documents.php" if page.name == "documents.html" else page.relative_to(source).as_posix()) for page in sorted(source.glob('*.html'))]
+        entries = ''.join('<url><loc>' + escape(url) + '</loc></url>' for url in page_urls)
         (output / 'sitemap.xml').write_text(
             '<?xml version="1.0" encoding="UTF-8"?>\n'
-            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
-            ''.join(f'<url><loc>{escape(base_url + ("" if page.name == "index.html" else page.relative_to(output).as_posix()))}</loc></url>' for page in sorted(output.rglob('*.html'))) + '</urlset>\n', encoding='utf-8')
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + entries + '</urlset>\n', encoding='utf-8')
     else:
         robots += '# Demo indexing is disabled by noindex tags in every HTML page.\n'
     (output / 'robots.txt').write_text(robots, encoding='utf-8')
